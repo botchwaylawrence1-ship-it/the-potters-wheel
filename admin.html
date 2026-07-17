@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Content Dashboard — The Potter's Wheel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-950:#070D1F; --navy-900:#0A1836; --navy-800:#122A4D; --royal-600:#2A4A8C;
+  --gold-600:#B4901E; --gold-500:#C9A227; --gold-300:#E8C766;
+  --cream-50:#FAF7F0;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --bg:var(--navy-950); --surface:var(--navy-900); --surface-2:var(--navy-800);
+  --text:var(--cream-50); --text-soft:#AEB6D6; --border:rgba(201,162,39,0.18);
+  --danger:#E0685F; --success:#4CBB6A;
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:var(--font-display); font-weight:600; margin:0;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;}
+
+.layout{display:grid; grid-template-columns:240px 1fr; min-height:100vh;}
+.sidebar{
+  background:var(--surface); border-right:1px solid var(--border); padding:26px 20px;
+  display:flex; flex-direction:column; gap:26px; position:sticky; top:0; height:100vh;
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:36px; height:36px; border-radius:50%;
+  background:conic-gradient(from 180deg, var(--gold-300), var(--royal-600), var(--gold-300));
+  display:flex; align-items:center; justify-content:center; position:relative; flex:none;
+}
+.brand-mark::before{content:""; position:absolute; inset:3px; border-radius:50%; background:var(--surface);}
+.brand-mark span{position:relative; font-size:.72rem; font-weight:700; color:var(--gold-300);}
+.brand-name{font-family:var(--font-display); font-size:1.02rem; line-height:1.1;}
+.brand-sub{font-size:.6rem; letter-spacing:.14em; color:var(--gold-500); font-weight:700;}
+
+.nav-tabs{display:flex; flex-direction:column; gap:4px;}
+.nav-tab{
+  display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:none;
+  background:transparent; color:var(--text-soft); font-weight:600; font-size:.9rem; text-align:left;
+  transition:background .2s, color .2s;
+}
+.nav-tab:hover{background:var(--surface-2); color:var(--text);}
+.nav-tab.active{background:var(--gold-500); color:var(--navy-950);}
+.nav-tab .count{margin-left:auto; font-size:.72rem; opacity:.75;}
+
+.sidebar-footer{margin-top:auto; display:flex; flex-direction:column; gap:10px;}
+.view-site{
+  display:flex; align-items:center; justify-content:center; gap:8px; padding:11px 14px; border-radius:10px;
+  border:1px solid var(--border); font-size:.85rem; font-weight:600; color:var(--text-soft);
+}
+.view-site:hover{border-color:var(--gold-500); color:var(--gold-500);}
+
+.main{padding:36px min(4vw,48px); max-width:1080px;}
+.topbar{display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:8px; flex-wrap:wrap;}
+.topbar h1{font-size:1.7rem;}
+.topbar p{color:var(--text-soft); font-size:.92rem; margin-top:6px; max-width:520px;}
+.top-actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:100px; font-weight:700;
+  font-size:.85rem; border:1px solid transparent; transition:transform .25s var(--ease), opacity .2s;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:linear-gradient(135deg,var(--gold-300),var(--gold-600)); color:var(--navy-950);}
+.btn-outline{background:transparent; border-color:var(--border); color:var(--text);}
+.btn-outline:hover{border-color:var(--gold-500); color:var(--gold-500);}
+.btn-danger{background:transparent; border-color:rgba(224,104,95,.5); color:var(--danger); padding:8px 14px; font-size:.78rem;}
+.btn-sm{padding:8px 14px; font-size:.78rem;}
+input[type="file"]{display:none;}
+
+.banner{
+  margin:22px 0 30px; padding:16px 20px; border-radius:14px; background:var(--surface); border:1px solid var(--border);
+  font-size:.86rem; color:var(--text-soft); display:flex; gap:12px; align-items:flex-start;
+}
+.banner b{color:var(--text);}
+.status-pill{
+  display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; padding:4px 10px;
+  border-radius:100px; background:var(--surface-2); color:var(--text-soft); margin-left:8px;
+}
+.status-dot{width:7px; height:7px; border-radius:50%; background:var(--text-soft);}
+.status-pill.ok .status-dot{background:var(--success);}
+.status-pill.warn .status-dot{background:var(--gold-500);}
+
+.toolbar{display:flex; justify-content:space-between; align-items:center; margin:26px 0 16px; gap:14px; flex-wrap:wrap;}
+.toolbar h2{font-size:1.2rem;}
+
+table{width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden;}
+thead th{
+  text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-500);
+  padding:14px 18px; border-bottom:1px solid var(--border); background:var(--surface-2);
+}
+tbody td{padding:14px 18px; border-bottom:1px solid var(--border); font-size:.88rem; vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+.row-title{font-weight:700;}
+.row-sub{color:var(--text-soft); font-size:.78rem; margin-top:3px;}
+.tag{display:inline-block; font-size:.7rem; font-weight:700; padding:3px 10px; border-radius:100px; background:var(--surface-2); color:var(--gold-300);}
+.row-actions{display:flex; gap:8px; justify-content:flex-end;}
+.empty-state{padding:50px 20px; text-align:center; color:var(--text-soft); background:var(--surface); border:1px dashed var(--border); border-radius:14px;}
+
+/* ---- Modal / editor panel ---- */
+.overlay{
+  position:fixed; inset:0; background:rgba(4,8,20,.6); backdrop-filter:blur(4px); display:none;
+  align-items:flex-start; justify-content:center; padding:60px 20px; z-index:50; overflow-y:auto;
+}
+.overlay.open{display:flex;}
+.panel{
+  background:var(--surface); border:1px solid var(--border); border-radius:20px; width:min(640px,100%);
+  padding:32px; box-shadow:0 40px 80px -30px rgba(0,0,0,.6);
+}
+.panel h3{font-size:1.25rem; margin-bottom:22px;}
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:.78rem; font-weight:600; color:var(--text-soft); margin-bottom:7px;}
+.field input, .field select, .field textarea{
+  width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text); font-size:.9rem;
+}
+.field textarea{min-height:100px; resize:vertical;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--gold-500);}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.panel-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:24px;}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{position:static; height:auto; flex-direction:row; flex-wrap:wrap; align-items:center;}
+  .nav-tabs{flex-direction:row; flex-wrap:wrap;}
+  .sidebar-footer{margin-top:0; flex-direction:row;}
+  .field-row{grid-template-columns:1fr;}
+  table, thead, tbody, th, td, tr{display:block;}
+  thead{display:none;}
+  tbody tr{border-bottom:1px solid var(--border); padding:10px 0;}
+  tbody td{border-bottom:none; padding:6px 18px;}
+  .row-actions{justify-content:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark"><span>PW</span></span>
+      <span>
+        <span class="brand-name" style="display:block;">Content Dashboard</span>
+        <span class="brand-sub">THE POTTER'S WHEEL</span>
+      </span>
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="sermons">Sermons &amp; Teachings <span class="count" id="countSermons">0</span></button>
+      <button class="nav-tab" data-tab="devotionals">Devotionals <span class="count" id="countDevotionals">0</span></button>
+      <button class="nav-tab" data-tab="articles">Articles <span class="count" id="countArticles">0</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="view-site" href="./index.html" target="_blank" rel="noopener">View Live Site ↗</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Sermons &amp; Teachings</h1>
+        <p id="pageSub">Everything shown in the Teachings section of your site, in one place.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-outline btn-sm" id="importBtn">Import content.json</button>
+        <input type="file" id="importFile" accept="application/json">
+        <button class="btn btn-outline btn-sm" id="exportBtn">Export content.json</button>
+        <button class="btn btn-primary btn-sm" id="addBtn">+ Add New</button>
+      </div>
+    </div>
+
+    <div class="banner">
+      <div>
+        <b>How publishing works:</b> this dashboard has no server of its own, so changes are kept in this browser session
+        <span class="status-pill" id="storageStatus"><span class="status-dot"></span><span id="storageStatusText">checking…</span></span>.
+        To update your <b>live</b> website, click <b>Export content.json</b> and upload the downloaded file to your host, replacing the existing <code>content.json</code> next to <code>index.html</code>. Use <b>Import content.json</b> to load your current file back in and keep editing.
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <h2 id="toolbarTitle">All Sermons &amp; Teachings</h2>
+    </div>
+
+    <div id="tableWrap"></div>
+  </main>
+</div>
+
+<!-- ===== Editor overlay ===== -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <h3 id="panelTitle">Add Sermon</h3>
+    <form id="editorForm"></form>
+  </div>
+</div>
+
+<script src="./cms.js"></script>
+<script>
+let CONTENT = null;
+let activeTab = "sermons";
+let editingId = null;
+
+const FIELD_DEFS = {
+  sermons: [
+    { key:"title", label:"Title", type:"text", required:true },
+    { key:"category", label:"Category (eyebrow tag)", type:"text", required:true, placeholder:"e.g. Identity in Christ" },
+    { key:"type", label:"Type", type:"select", options:[["video","Video Teaching"],["short","Short Message"],["study","Bible Study"]], required:true },
+    { key:"description", label:"Description", type:"textarea", required:true },
+    { key:"duration", label:"Duration", type:"text", placeholder:"e.g. 38 min" },
+    { key:"meta", label:"Series info", type:"text", placeholder:"e.g. Series · Part 1" },
+    { key:"videoUrl", label:"Video URL (optional)", type:"text", placeholder:"https://youtube.com/..." },
+    { key:"date", label:"Date", type:"date", required:true }
+  ],
+  devotionals: [
+    { key:"title", label:"Title", type:"text", required:true },
+    { key:"date", label:"Date", type:"date", required:true },
+    { key:"verseText", label:"Scripture text", type:"textarea", required:true },
+    { key:"verseRef", label:"Scripture reference", type:"text", required:true, placeholder:"e.g. JEREMIAH 1:5" },
+    { key:"reflection", label:"Reflection", type:"textarea", required:true },
+    { key:"prayer", label:"Prayer", type:"textarea", required:true }
+  ],
+  articles: [
+    { key:"title", label:"Title", type:"text", required:true },
+    { key:"category", label:"Category", type:"select", required:true, options:[["faith","Faith"],["purpose","Purpose"],["prayer","Prayer"],["living","Christian Living"],["growth","Spiritual Growth"]] },
+    { key:"excerpt", label:"Excerpt / summary", type:"textarea", required:true },
+    { key:"readTime", label:"Read time", type:"text", placeholder:"e.g. 6 min read" },
+    { key:"date", label:"Date", type:"date", required:true }
+  ]
+};
+
+const TAB_META = {
+  sermons: { title:"Sermons & Teachings", sub:"Everything shown in the Teachings section of your site, in one place.", singular:"Sermon" },
+  devotionals: { title:"Devotionals", sub:"The daily encouragement shown on your Devotionals section. The most recent date is featured on the site.", singular:"Devotional" },
+  articles: { title:"Articles", sub:"Posts shown in your Articles & Blog section.", singular:"Article" }
+};
+
+async function init(){
+  const result = await cmsLoadContent();
+  CONTENT = result.data;
+  updateStorageStatus();
+  renderCounts();
+  renderTable();
+}
+
+function updateStorageStatus(){
+  const pill = document.getElementById("storageStatus");
+  const text = document.getElementById("storageStatusText");
+  if (cmsHasWindowStorage()){
+    pill.className = "status-pill ok";
+    text.textContent = "auto-saving in this session";
+  } else {
+    pill.className = "status-pill warn";
+    text.textContent = "session only — export to publish";
+  }
+}
+
+function renderCounts(){
+  document.getElementById("countSermons").textContent = CONTENT.sermons.length;
+  document.getElementById("countDevotionals").textContent = CONTENT.devotionals.length;
+  document.getElementById("countArticles").textContent = CONTENT.articles.length;
+}
+
+function switchTab(tab){
+  activeTab = tab;
+  document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  document.getElementById("pageTitle").innerHTML = TAB_META[tab].title;
+  document.getElementById("pageSub").textContent = TAB_META[tab].sub;
+  document.getElementById("toolbarTitle").textContent = "All " + TAB_META[tab].title;
+  renderTable();
+}
+
+function renderTable(){
+  const items = [...CONTENT[activeTab]].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+  const wrap = document.getElementById("tableWrap");
+  if (items.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Nothing here yet. Click "+ Add New" to create your first entry.</div>';
+    return;
+  }
+  let rows = "";
+  items.forEach(item => {
+    if (activeTab === "sermons"){
+      rows += `<tr>
+        <td><div class="row-title">${cmsEscapeHTML(item.title)}</div><div class="row-sub">${cmsEscapeHTML(item.description || "").slice(0,80)}${(item.description||"").length>80?"…":""}</div></td>
+        <td><span class="tag">${cmsEscapeHTML(item.typeLabel || typeLabelFor(item.type))}</span></td>
+        <td>${cmsEscapeHTML(item.category || "")}</td>
+        <td>${cmsEscapeHTML(item.date || "")}</td>
+        <td><div class="row-actions"><button class="btn btn-outline btn-sm" data-edit="${item.id}">Edit</button><button class="btn btn-danger" data-delete="${item.id}">Delete</button></div></td>
+      </tr>`;
+    } else if (activeTab === "devotionals"){
+      rows += `<tr>
+        <td><div class="row-title">${cmsEscapeHTML(item.title)}</div><div class="row-sub">${cmsEscapeHTML(item.verseRef || "")}</div></td>
+        <td>${cmsEscapeHTML(item.date || "")}</td>
+        <td><div class="row-actions"><button class="btn btn-outline btn-sm" data-edit="${item.id}">Edit</button><button class="btn btn-danger" data-delete="${item.id}">Delete</button></div></td>
+      </tr>`;
+    } else {
+      rows += `<tr>
+        <td><div class="row-title">${cmsEscapeHTML(item.title)}</div><div class="row-sub">${cmsEscapeHTML(item.excerpt || "").slice(0,80)}${(item.excerpt||"").length>80?"…":""}</div></td>
+        <td><span class="tag">${cmsEscapeHTML(item.categoryLabel || item.category)}</span></td>
+        <td>${cmsEscapeHTML(item.date || "")}</td>
+        <td><div class="row-actions"><button class="btn btn-outline btn-sm" data-edit="${item.id}">Edit</button><button class="btn btn-danger" data-delete="${item.id}">Delete</button></div></td>
+      </tr>`;
+    }
+  });
+
+  let head = "";
+  if (activeTab === "sermons"){
+    head = "<tr><th>Title</th><th>Type</th><th>Category</th><th>Date</th><th></th></tr>";
+  } else if (activeTab === "devotionals"){
+    head = "<tr><th>Title</th><th>Date</th><th></th></tr>";
+  } else {
+    head = "<tr><th>Title</th><th>Category</th><th>Date</th><th></th></tr>";
+  }
+
+  wrap.innerHTML = `<table><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+
+  wrap.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => openEditor(btn.dataset.edit)));
+  wrap.querySelectorAll("[data-delete]").forEach(btn => btn.addEventListener("click", () => deleteItem(btn.dataset.delete)));
+}
+
+function typeLabelFor(type){
+  const map = { video:"Video", short:"Short", study:"Bible Study" };
+  return map[type] || type;
+}
+function categoryLabelFor(cat){
+  const map = { faith:"Faith", purpose:"Purpose", prayer:"Prayer", living:"Christian Living", growth:"Spiritual Growth" };
+  return map[cat] || cat;
+}
+
+function openEditor(id){
+  editingId = id || null;
+  const defs = FIELD_DEFS[activeTab];
+  const item = id ? CONTENT[activeTab].find(x => x.id === id) : {};
+  document.getElementById("panelTitle").textContent = (id ? "Edit " : "Add ") + TAB_META[activeTab].singular;
+
+  let html = "";
+  defs.forEach(def => {
+    const val = item && item[def.key] != null ? item[def.key] : "";
+    if (def.type === "select"){
+      let opts = def.options.map(([v,label]) => `<option value="${v}" ${v===val?"selected":""}>${label}</option>`).join("");
+      html += `<div class="field"><label>${def.label}</label><select name="${def.key}">${opts}</select></div>`;
+    } else if (def.type === "textarea"){
+      html += `<div class="field"><label>${def.label}</label><textarea name="${def.key}" ${def.required?"required":""}>${cmsEscapeHTML(val)}</textarea></div>`;
+    } else {
+      html += `<div class="field"><label>${def.label}</label><input type="${def.type}" name="${def.key}" value="${cmsEscapeHTML(val)}" placeholder="${def.placeholder||""}" ${def.required?"required":""}></div>`;
+    }
+  });
+  html += `<div class="panel-actions">
+    <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+    <button type="submit" class="btn btn-primary">Save ${TAB_META[activeTab].singular}</button>
+  </div>`;
+
+  const form = document.getElementById("editorForm");
+  form.innerHTML = html;
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("cancelBtn").addEventListener("click", closeEditor);
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const record = {};
+    defs.forEach(def => record[def.key] = (fd.get(def.key) || "").toString().trim());
+
+    if (activeTab === "sermons"){
+      record.typeLabel = typeLabelFor(record.type);
+    }
+    if (activeTab === "articles"){
+      record.categoryLabel = categoryLabelFor(record.category);
+    }
+
+    if (editingId){
+      const idx = CONTENT[activeTab].findIndex(x => x.id === editingId);
+      CONTENT[activeTab][idx] = { ...CONTENT[activeTab][idx], ...record };
+    } else {
+      record.id = cmsUid(activeTab.slice(0,1));
+      CONTENT[activeTab].push(record);
+    }
+    await persist();
+    closeEditor();
+    renderCounts();
+    renderTable();
+  };
+}
+
+function closeEditor(){
+  document.getElementById("overlay").classList.remove("open");
+  editingId = null;
+}
+
+async function deleteItem(id){
+  if (!confirm("Delete this entry? This can't be undone in this session.")) return;
+  CONTENT[activeTab] = CONTENT[activeTab].filter(x => x.id !== id);
+  await persist();
+  renderCounts();
+  renderTable();
+}
+
+async function persist(){
+  await cmsSaveContent(CONTENT);
+}
+
+document.querySelectorAll(".nav-tab").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+document.getElementById("addBtn").addEventListener("click", () => openEditor(null));
+document.getElementById("overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") closeEditor(); });
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  cmsDownloadJSON(CONTENT, "content.json");
+});
+document.getElementById("importBtn").addEventListener("click", () => {
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try{
+    const json = await cmsReadJSONFile(file);
+    if (!json.sermons || !json.devotionals || !json.articles){
+      alert("This file doesn't look like a valid content.json — it should contain sermons, devotionals, and articles.");
+      return;
+    }
+    CONTENT = json;
+    await persist();
+    renderCounts();
+    renderTable();
+    alert("Imported successfully. Keep editing, then Export when you're ready to publish.");
+  }catch(err){
+    alert("Couldn't read that file. Please choose a valid content.json export.");
+  }
+  e.target.value = "";
+});
+
+init();
+</script>
+</body>
+</html>
